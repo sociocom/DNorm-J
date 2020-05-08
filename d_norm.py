@@ -3,7 +3,6 @@ import pickle
 from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
 import numpy as np
 from tqdm import tqdm
-mecab = MeCab.Tagger('-Owakati')
 
 def tokenize(text):
     return text.split(' ')
@@ -74,7 +73,6 @@ class DNorm(object):
             tmp = min(tmp, 1000)
             rank += tmp
             cnt += 1
-        print(zero, cnt)
         return rank / cnt
 
     def evaluate(self, x, y):
@@ -96,22 +94,17 @@ class DNorm(object):
         vec_val_x = self._encode(val_x)
         score = self.evaluate(val_x, val_y)
         while val_score[-1] < val_score[-2]:
-            #idx = np.random.choice(len(X), 1)[0]
             idx_list = np.random.permutation([i for i in range(len(X))])
             for idx in tqdm(idx_list):
                 x_vec = vec_X[idx]
                 y_vec = vec_Y[idx]
                 y = Y[idx]
                 neg_vec = self._sample_negative(x_vec, y)
-                #vecs = self._encode([x, y, neg])
-                #x_vec, y_vec, neg_vec = vecs[0], vecs[1], vecs[2]
                 self._update(x_vec, y_vec, neg_vec, eta)
 
-            #score = self.evaluate(val_x, val_y)
-            #score = self.calc_avg_rank(val_x, val_y, encoded=True)
             score = self.calc_avg_rank(vec_val_x, val_y, encoded=True)
             val_score.append(score)
-            print(score)
+            print('average rank of validation set : ', score[0])
 
 
     def predict(self, t, k=1, encoded=False):
@@ -119,7 +112,7 @@ class DNorm(object):
             t = self._encode(t)
         sims = self._score_vec(t, self.normal_vecs).toarray()
         rank = sims.argsort(axis=1)[:, ::-1][:, :k]
-        return np.take_along_axis(self.normal_set[:, np.newaxis], rank, axis=0)
+        return np.take_along_axis(self.normal_set[:, np.newaxis], rank, axis=0).reshape(-1)
 
     def _update(self, m, np, nn, eta):
         score = self._score_vec(m, np).toarray()[0][0] - self._score_vec(m, nn).toarray()[0][0]
@@ -127,37 +120,3 @@ class DNorm(object):
             self.W = self.W + eta * (m.T.dot(np) - m.T.dot(nn))
 
 
-if __name__ == '__main__':
-    tokenizer = Tokenizer(mecab.parse, lambda s: s[:-1])
-
-    with open('normal_set.txt', 'r') as f:
-        normal_set = [line for line in f.read().split('\n') if line != '']
-
-    with open('DATA_IM_tfidf.pkl', 'rb') as f:
-        tfidf = pickle.load(f)
-
-    """
-    with open('data/train.txt', 'r') as f:
-        lines = [line.split('\t') for line in f.read().split('\n') if line != '']
-        train_X = [line[1] for line in lines]
-        train_Y = [line[0] for line in lines]
-
-    with open('data/valid.txt', 'r') as f:
-        lines = [line.split('\t') for line in f.read().split('\n') if line != '']
-        val_X = [line[1] for line in lines]
-        val_Y = [line[0] for line in lines]
-    """
-
-    with open('sample.txt', 'r') as f:
-        lines = [line.split('\t') for line in f.read().split('\n') if line != '']
-        test_X = [line[1] for line in lines]
-        test_Y = [line[0] for line in lines]
-
-    #print(len(train_X), len(val_X))
-    model = DNorm(tfidf, normal_set, tokenizer.tokenize)
-    model.load('W.npz')
-    print(model.evaluate(test_X, test_Y))
-    #print(model.predict(test_X))
-    #model.train(train_X, train_Y, val_X, val_Y, 1e-2)
-    #model.train(val_X, val_Y, val_X, val_Y, 1e-1)
-    #model.save('W_0.01.npz')
