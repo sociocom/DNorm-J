@@ -27,7 +27,7 @@ sh download_corpus.sh
 
 - 学習済みモデル
 ```
-sh download_models.sh
+sh download_model.sh
 ```
 
 ## 使い方
