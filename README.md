@@ -31,10 +31,11 @@ sh download_model.sh
 ```
 
 ## 使い方
-- 学習済みモデルの使用
+### 学習済みモデルの使用
+入力ファイルに記載された病名を標準化します．
+
 コーパス，学習済みモデルのダウンロードを行ってから実行してください．
 
-入力ファイルに記載された病名を標準化します．
 
 入力：data/sample.txt
 
@@ -44,11 +45,11 @@ sh download_model.sh
 sh predict_using_pretrained.sh
 ```
 
-- 標準化
+### 標準化
 ```
 python predict.py --input (病名リスト) --model (学習済みモデル) --normal (標準病名リスト) --tfidf (TF-IDFモデル) --output (出力パス)
 ```
-- 学習
+### 学習
 ```
 python train.py --train (学習データ) --valid (検証データ) --normal (標準病名リスト) -tfidf (TF-IDFモデル) --output (モデル出力パス)
 ```
