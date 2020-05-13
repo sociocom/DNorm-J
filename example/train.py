@@ -1,7 +1,11 @@
 import MeCab
-from ..dnorm import Tokenizer, DNorm, tokenize
+import sys
 import pickle
 import argparse
+
+sys.path.append('../')
+
+from dnorm import Tokenizer, DNorm, tokenize
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
