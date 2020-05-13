@@ -31,6 +31,15 @@ sh download_model.sh
 ```
 
 ## 使い方
+- 学習済みモデルの使用
+コーパス，学習済みモデルのダウンロードを行ってください．
+入力：data/sample.txt
+出力：data/sample_output.txt
+
+```
+sh predict_using_pretrained.sh
+```
+
 - 標準化
 ```
 python predict.py --input (病名リスト) --model (学習済みモデル) --normal (標準病名リスト) --tfidf (TF-IDFモデル) --output (出力パス)
