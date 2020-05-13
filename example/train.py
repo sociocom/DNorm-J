@@ -1,5 +1,5 @@
 import MeCab
-from d_norm import Tokenizer, DNorm, tokenize
+from ..dnorm import Tokenizer, DNorm, tokenize
 import pickle
 import argparse
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         val_X = [line[1] for line in lines]
         val_Y = [line[0] for line in lines]
 
-    model = DNorm(tfidf, normal_set, tokenizer.tokenize)
+    model = dnorm.DNorm(tfidf, normal_set, tokenizer.tokenize)
     #model.load('W.npz')
     #print(model.evaluate(test_X, test_Y))
     #print(model.predict(test_X))

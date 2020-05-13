@@ -53,9 +53,7 @@ class DNorm(object):
             neg_vecs = self.normal_vecs[:-1]
         else:
             neg_vecs = vstack([self.normal_vecs[:i], self.normal_vecs[i+1:]])
-        #neg_list = list(self.normal_list - set([y]))
-        #neg_vecs = self._encode(neg_list)
-        #x_vecs = self._encode([x])
+
         sims = self._score_vec(x, neg_vecs)
         rank = sims.argmax()
 
