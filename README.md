@@ -2,11 +2,11 @@
 Japanese disease normalization tool ([DNorm](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3810844/))
 
 ## 環境
-```
 python>=3.6
-MeCab==0.996.5
-```
-pythonの依存ライブラリ
+
+[MeCab](https://taku910.github.io/mecab/)
+
+### pythonの依存ライブラリ
 ```
 numpy==1.18.2
 scipy==1.4.1
