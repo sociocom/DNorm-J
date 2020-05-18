@@ -1,7 +1,9 @@
 import MeCab
 from d_norm import Tokenizer, DNorm, tokenize
+from expand_abbreviation import Converter
 import pickle
 import argparse
+import json
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -31,7 +33,10 @@ if __name__ == '__main__':
         val_X = [line[1] for line in lines]
         val_Y = [line[0] for line in lines]
 
-    model = DNorm(tfidf, normal_set, tokenizer.tokenize)
+    with open('data/abb_dic.json') as f:
+        med_dic = json.load(f)
+
+    model = DNorm(tfidf, normal_set, tokenizer.tokenize, med_dic)
     #model.load('W.npz')
     #print(model.evaluate(test_X, test_Y))
     #print(model.predict(test_X))
