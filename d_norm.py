@@ -1,6 +1,7 @@
 import MeCab
 import pickle
 from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
+from expand_abbreviation import Converter
 import numpy as np
 from tqdm import tqdm
 
@@ -16,7 +17,8 @@ class Tokenizer(object):
         return self.fn(self.tokenizer(text))
 
 class DNorm(object):
-    def __init__(self, model, normal_set, tokenizer):
+    def __init__(self, model, normal_set, tokenizer, abb_dic):
+        self.converter = Converter(abb_dic)
         self.model = model
         self.normal_set = np.array(normal_set)
         self.normal_list = set(normal_set)
@@ -36,7 +38,7 @@ class DNorm(object):
         self.W = load_npz(path)
 
     def _encode(self, text_list):
-        text_list = [self.tokenizer(text) for text in text_list]
+        text_list = [self.tokenizer(self.converter.convert(str(text))) for text in text_list]
         return self.model.transform(text_list)
 
     def _score_vec(self, v1, v2):
