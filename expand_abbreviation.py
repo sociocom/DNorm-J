@@ -8,7 +8,7 @@ class Converter(object):
 
     def convert(self, sent):
         sent = mojimoji.zen_to_han(sent, kana=False, digit=False)
-        iters = re.finditer(r'([a-zA-Z][a-zA-Z\s]*)', sent)
+        iters = re.finditer(r'([a-zA-Z][a-zA-Z\s]*)$', sent)
         output_word = ""
         pos = 0
         for i in iters:
