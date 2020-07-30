@@ -2,6 +2,11 @@ import shutil
 import requests
 import csv
 
+
+def tokenize(text):
+    return text.split(' ')
+
+
 def download_fileobj(src, dst, binary=False):
     res = requests.get(src, stream=True)
     with open(dst, "wb") as f:

@@ -1,6 +1,9 @@
 import argparse
 
+print(__name__)
+
 from .d_norm import DNorm
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input_file", help="train path")

@@ -18,8 +18,6 @@ DEFAULT_DNORM_PATH = Path(os.path.expanduser(
 
 BASE_URL = "http://aoi.naist.jp/DNorm"
 
-def tokenize(text):
-    return text.split(' ')
 
 class Tokenizer(object):
     def __init__(self, tokenizer, fn):
@@ -28,6 +26,7 @@ class Tokenizer(object):
 
     def tokenize(self, text):
         return self.fn(self.tokenizer(text))
+
 
 class DNorm(object):
     def __init__(self, model, normal_set, tokenizer, converter):
@@ -141,6 +140,7 @@ class DNorm(object):
 
     @classmethod
     def from_pretrained(cls, normal_set="default", abb_expander="default"):
+
         model_dir = DEFAULT_DNORM_PATH
 
         if not model_dir.parent.is_dir():
@@ -155,8 +155,8 @@ class DNorm(object):
         if not (model_dir / "W_EHR_all.npz").is_file():
             download_fileobj(BASE_URL + "/W_EHR_all.npz", model_dir / "W_EHR_all.npz")
 
-        if not (model_dir / "EHR_idf.pkl").is_file():
-            download_fileobj(BASE_URL + "/EHR_idf.pkl", model_dir / "EHR_idf.pkl")
+        if not (model_dir / "EHR_idf2.pkl").is_file():
+            download_fileobj(BASE_URL + "/EHR_idf2.pkl", model_dir / "EHR_idf2.pkl")
 
         if not (model_dir / "abb_dic.csv").is_file():
             download_fileobj(BASE_URL + "/abb_dic.csv", model_dir / "abb_dic.csv")
@@ -178,10 +178,10 @@ class DNorm(object):
 
         normal_set = load_normal_set(normal_set)
 
-        with open(str(model_dir / "EHR_idf.pkl"), 'rb') as f:
+        with open(str(model_dir / "EHR_idf2.pkl"), 'rb') as f:
             tfidf = pickle.load(f)
 
-        model = cls(tfidf, normal_set, tokenizer.tokenize, converter)
+        model = cls(tfidf, normal_set, tokenizer.tokenizer, converter)
         model.load(str(model_dir / "W_EHR_all.npz"))
 
         return model
