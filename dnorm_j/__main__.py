@@ -1,7 +1,5 @@
 import argparse
 
-print(__name__)
-
 from .d_norm import DNorm
 
 

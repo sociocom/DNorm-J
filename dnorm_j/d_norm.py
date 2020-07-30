@@ -5,6 +5,7 @@ import pickle
 
 import MeCab
 from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from tqdm import tqdm
 
@@ -17,6 +18,9 @@ DEFAULT_DNORM_PATH = Path(os.path.expanduser(
         ))
 
 BASE_URL = "http://aoi.naist.jp/DNorm"
+
+def tokenize(text):
+    return text.split(' ')
 
 
 class Tokenizer(object):
@@ -155,8 +159,8 @@ class DNorm(object):
         if not (model_dir / "W_EHR_all.npz").is_file():
             download_fileobj(BASE_URL + "/W_EHR_all.npz", model_dir / "W_EHR_all.npz")
 
-        if not (model_dir / "EHR_idf2.pkl").is_file():
-            download_fileobj(BASE_URL + "/EHR_idf2.pkl", model_dir / "EHR_idf2.pkl")
+        if not (model_dir / "EHR_idf3.pkl").is_file():
+            download_fileobj(BASE_URL + "/EHR_idf3.pkl", model_dir / "EHR_idf3.pkl")
 
         if not (model_dir / "abb_dic.csv").is_file():
             download_fileobj(BASE_URL + "/abb_dic.csv", model_dir / "abb_dic.csv")
@@ -178,8 +182,18 @@ class DNorm(object):
 
         normal_set = load_normal_set(normal_set)
 
-        with open(str(model_dir / "EHR_idf2.pkl"), 'rb') as f:
+        tfidf = TfidfVectorizer(analyzer=lambda s: s.split(' '))
+
+        with open(str(model_dir / "EHR_idf3.pkl"), 'rb') as f:
+            params = pickle.load(f)
+        tfidf.set_params(**params['params'])
+        tfidf.vocabulary_ = params['voc']
+        tfidf.idf_ = params['idf']
+
+        """
+        with open(str(model_dir / "EHR_idf.pkl"), 'rb') as f:
             tfidf = pickle.load(f)
+        """
 
         model = cls(tfidf, normal_set, tokenizer.tokenizer, converter)
         model.load(str(model_dir / "W_EHR_all.npz"))
