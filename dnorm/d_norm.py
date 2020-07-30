@@ -1,8 +1,21 @@
-import MeCab
+from pathlib import Path
+import sys
+import os
 import pickle
+
+import MeCab
 from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
 import numpy as np
 from tqdm import tqdm
+
+from util import download_fileobj
+
+DEFAULT_CACHE_PATH = os.getenv("DEFAULT_CACHE_PATH", "~/.cache")
+DEFAULT_DNORM_PATH = Path(os.path.expanduser(
+        os.path.join(DEFAULT_CACHE_PATH, "Dnorm")
+        ))
+
+BASE_URL = "http://aoi.naist.jp/DNorm"
 
 def tokenize(text):
     return text.split(' ')
@@ -112,9 +125,50 @@ class DNorm(object):
         rank = sims.argsort(axis=1)[:, ::-1][:, :k]
         return np.take_along_axis(self.normal_set[:, np.newaxis], rank, axis=0).reshape(-1)
 
+    def normalize(self, word):
+        word = self.predict([word], k=1)
+        return word[0]
+
     def _update(self, m, np, nn, eta):
         score = self._score_vec(m, np).toarray()[0][0] - self._score_vec(m, nn).toarray()[0][0]
         if score < 1:
             self.W = self.W + eta * (m.T.dot(np) - m.T.dot(nn))
 
+    @classmethod
+    def from_pretrained(cls, model_name='dnorm'):
+        assert model_name == 'dnorm', 'dnorm以外実装されていません'
+        model_dir = DEFAULT_DNORM_PATH
 
+        if not model_dir.parent.is_dir():
+            model_dir.parent.mkdir()
+
+        if not model_dir.is_dir():
+            model_dir.mkdir()
+
+        if not (model_dir / "normal_set.txt").is_file():
+            download_fileobj(BASE_URL + "/normal_set.txt", model_dir / "normal_set.txt")
+
+        if not (model_dir / "W_EHR_all.npz").is_file():
+            download_fileobj(BASE_URL + "/W_EHR_all.npz", model_dir / "W_EHR_all.npz")
+
+        if not (model_dir / "EHR_idf.pkl").is_file():
+            download_fileobj(BASE_URL + "/EHR_idf.pkl", model_dir / "EHR_idf.pkl")
+
+        mecab = MeCab.Tagger('-Owakati')
+        tokenizer = Tokenizer(mecab.parse, lambda s: s[:-1])
+
+        with open(str(model_dir / "normal_set.txt"), 'r') as f:
+            normal_set = [line for line in f.read().split('\n') if line != '']
+
+        with open(str(model_dir / "EHR_idf.pkl"), 'rb') as f:
+            tfidf = pickle.load(f)
+
+        model = cls(tfidf, normal_set, tokenizer.tokenize)
+        model.load(str(model_dir / "W_EHR_all.npz"))
+
+        return model
+
+
+if __name__ == "__main__":
+    model = DNorm.from_pretrained()
+    print(model.normalize("急性骨髄性白血病"))
