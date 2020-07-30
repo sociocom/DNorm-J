@@ -3,3 +3,4 @@ numpy==1.18.2
 scipy==1.4.1
 sklearn==0.0
 tqdm==4.45.0
+mojimoji==0.0.9
