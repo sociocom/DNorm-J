@@ -1,10 +1,14 @@
 import re
-import mojimoji
 import json
+import csv
+
+import mojimoji
+
+from .util import load_abb_dic
 
 class Converter(object):
-    def __init__(self, med_dic):
-        self.med_dic = med_dic
+    def __init__(self, med_dic_path):
+        self.med_dic = load_abb_dic(med_dic_path)
 
     def convert(self, sent):
         sent = mojimoji.zen_to_han(sent, kana=False, digit=False)
