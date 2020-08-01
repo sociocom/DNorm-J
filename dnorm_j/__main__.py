@@ -5,9 +5,9 @@ from .d_norm import DNorm
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", '--input_file', nargs='?', type=argparse.FileType(),
+parser.add_argument("-i", '--input_file', nargs='?', type=argparse.FileType("r"),
         default=sys.stdin, help="input file path")
-parser.add_argument("-o", '--output_file', nargs='?', type=argparse.FileType(),
+parser.add_argument("-o", '--output_file', nargs='?', type=argparse.FileType("w"),
         default=sys.stdout, help="output file path")
 parser.add_argument("-n", "--normal", default="default", help="normal set path")
 parser.add_argument("-d", "--dict", default="default", help="normal set path")
