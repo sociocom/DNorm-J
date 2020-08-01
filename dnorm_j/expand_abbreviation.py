@@ -2,7 +2,7 @@ import re
 import json
 import csv
 
-import mojimoji
+import jaconv
 
 from .util import load_abb_dic
 
@@ -11,7 +11,7 @@ class Converter(object):
         self.med_dic = load_abb_dic(med_dic_path)
 
     def convert(self, sent):
-        sent = mojimoji.zen_to_han(sent, kana=False, digit=False)
+        sent = jaconv.z2h(sent, kana=False, ascii=True, digit=True)
         iters = re.finditer(r'([a-zA-Z][a-zA-Z\s]*)$', sent)
         output_word = ""
         pos = 0
@@ -43,7 +43,7 @@ class Converter(object):
             output_word += sent[pos]
             pos += 1
 
-        return mojimoji.han_to_zen(output_word)
+        return jaconv.h2z(output_word, kana=True, ascii=True, digit=True)
 
 if __name__ == '__main__':
     with open('data/abb_dic.json', 'r') as f:
