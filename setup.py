@@ -8,14 +8,14 @@ from setuptools import setup, find_packages
 def read_requirements():
     """parse requirements from requirements.txt."""
     reqs_path = os.path.join("", "requirements.txt")
-    with open(reqs_path, "r") as f:
+    with open(reqs_path, "r", encoding="utf-8") as f:
         requirements = [line.rstrip() for line in f]
     return requirements
 
-with open('README.md') as f:
+with open('README.md', encoding="utf-8") as f:
     readme = f.read()
 
-with open('LICENSE') as f:
+with open('LICENSE', encoding="utf-8") as f:
     license = f.read()
 
 setup(
