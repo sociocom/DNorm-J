@@ -14,7 +14,7 @@ def download_fileobj(src, dst, binary=False):
 
 def load_abb_dic(path):
     dic = {}
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
             dic[row[0]] = row[1]
@@ -22,7 +22,7 @@ def load_abb_dic(path):
     return dic
 
 def load_normal_set(path):
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding="utf-8") as f:
         normal_set = [line for line in f.read().split('\n') if line != '']
 
     return normal_set
