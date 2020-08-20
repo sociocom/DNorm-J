@@ -16,6 +16,7 @@ MeCab>=0.996.5
 ## インストール
 ```
 pip install .
+pip install git+https://github.com/sociocom/DNorm-J.git
 ```
 
 ## 使い方
