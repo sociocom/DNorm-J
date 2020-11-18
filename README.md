@@ -28,8 +28,18 @@ pip install git+https://github.com/sociocom/DNorm-J.git
 
 ## コマンドから
 ### 入力（sample.txt）
+```
+腸閉塞症状
+高Ｃａ尿症
+二次性副腎不全
+```
 
 ### 出力（output.txt）
+```
+イレウス
+高カルシウム尿症
+副腎クリーゼ
+```
 
 ### スクリプトから
 
