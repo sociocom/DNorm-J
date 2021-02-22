@@ -52,3 +52,5 @@ result = model.normalize('AML')
 print(result)
 ```
 
+## 性能
+
