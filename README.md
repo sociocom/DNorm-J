@@ -3,7 +3,8 @@
 日本語の病名を正規化するツールです
 
 ## 手法
-[DNorm](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3810844/)の日本語実装になります．
+[DNorm](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3810844/)の日本語実装になります．  
+Tf-idfベースのランキング手法により病名を正規化します。
 
 詳細はリンク先の論文をご参照ください．
 
