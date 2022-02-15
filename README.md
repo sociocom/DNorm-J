@@ -54,3 +54,6 @@ print(result)
 
 ## 性能
 ![image](accuracy.png)
+
+## コントリビュータ
+- 氏家翔吾（奈良先端科学技術大学院大学）
