@@ -1,5 +1,5 @@
 mecab-python3>=0.996.5
-numpy==1.18.2
+numpy==1.22.0
 scipy==1.4.1
 scikit-learn
 tqdm==4.45.0
