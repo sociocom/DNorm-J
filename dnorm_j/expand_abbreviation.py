@@ -1,10 +1,11 @@
-import re
-import json
 import csv
+import json
+import re
 
 import jaconv
 
 from .util import load_abb_dic
+
 
 class Converter(object):
     def __init__(self, med_dic_path):
@@ -12,14 +13,14 @@ class Converter(object):
 
     def convert(self, sent):
         sent = jaconv.z2h(sent, kana=False, ascii=True, digit=True)
-        iters = re.finditer(r'([a-zA-Z][a-zA-Z\s]*)$', sent)
+        iters = re.finditer(r"([a-zA-Z][a-zA-Z\s]*)$", sent)
         output_word = ""
         pos = 0
         for i in iters:
             s_pos, e_pos = i.span()
             word = i.groups()[0]
-            word = re.sub('^\s', r'', word)
-            word = re.sub('\s$', r'', word)
+            word = re.sub("^\s", r"", word)
+            word = re.sub("\s$", r"", word)
             s_word = ""
 
             while pos < s_pos:
@@ -33,7 +34,7 @@ class Converter(object):
             else:
                 s_word = word
 
-            if s_word == '':
+            if s_word == "":
                 s_word = word
 
             output_word += s_word
@@ -45,9 +46,10 @@ class Converter(object):
 
         return jaconv.h2z(output_word, kana=True, ascii=True, digit=True)
 
-if __name__ == '__main__':
-    with open('data/abb_dic.json', 'r') as f:
+
+if __name__ == "__main__":
+    with open("data/abb_dic.json", "r") as f:
         med_dic = json.load(f)
 
     converter = Converter(med_dic)
-    print(converter.convert('AML'))
+    print(converter.convert("AML"))

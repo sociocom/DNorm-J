@@ -1,6 +1,7 @@
-import shutil
-import requests
 import csv
+import shutil
+
+import requests
 
 
 def tokenize(text):

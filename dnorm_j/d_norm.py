@@ -1,26 +1,25 @@
-from pathlib import Path
-import sys
 import os
 import pickle
+import sys
+from pathlib import Path
 
 import MeCab
-from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
-from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from scipy.sparse import csr_matrix, load_npz, save_npz, vstack
+from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
 
-from .util import download_fileobj, load_abb_dic, load_normal_set
 from .expand_abbreviation import Converter
+from .util import download_fileobj, load_abb_dic, load_normal_set
 
 DEFAULT_CACHE_PATH = os.getenv("DEFAULT_CACHE_PATH", "~/.cache")
-DEFAULT_DNORM_PATH = Path(os.path.expanduser(
-        os.path.join(DEFAULT_CACHE_PATH, "Dnorm")
-        ))
+DEFAULT_DNORM_PATH = Path(os.path.expanduser(os.path.join(DEFAULT_CACHE_PATH, "Dnorm")))
 
 BASE_URL = "http://aoi.naist.jp/DNorm"
 
+
 def tokenize(text):
-    return text.split(' ')
+    return text.split(" ")
 
 
 class Tokenizer(object):
@@ -49,13 +48,15 @@ class DNorm(object):
 
     def save(self, path):
         save_npz(path, self.W)
-        
+
     def load(self, path):
         self.W = load_npz(path)
 
     def _encode(self, text_list):
         if self.converter is not None:
-            text_list = [self.tokenizer(self.converter(str(text))) for text in text_list]
+            text_list = [
+                self.tokenizer(self.converter(str(text))) for text in text_list
+            ]
         else:
             text_list = [self.tokenizer(text) for text in text_list]
         return self.model.transform(text_list)
@@ -73,7 +74,7 @@ class DNorm(object):
         elif i == len(self.normal_set) - 1:
             neg_vecs = self.normal_vecs[:-1]
         else:
-            neg_vecs = vstack([self.normal_vecs[:i], self.normal_vecs[i+1:]])
+            neg_vecs = vstack([self.normal_vecs[:i], self.normal_vecs[i + 1 :]])
 
         sims = self._score_vec(x, neg_vecs)
         rank = sims.argmax()
@@ -105,7 +106,6 @@ class DNorm(object):
             total += 1
         return cnt / total
 
-
     def train(self, X, Y, val_x, val_y, eta):
         val_score = [1e8, 1e7]
         vec_X = self._encode(X)
@@ -123,22 +123,26 @@ class DNorm(object):
 
             score = self.calc_avg_rank(vec_val_x, val_y, encoded=True)
             val_score.append(score)
-            print('average rank of validation set : ', score[0])
-
+            print("average rank of validation set : ", score[0])
 
     def predict(self, t, k=1, encoded=False):
         if not encoded:
             t = self._encode(t)
         sims = self._score_vec(t, self.normal_vecs).toarray()
         rank = sims.argsort(axis=1)[:, ::-1][:, :k]
-        return np.take_along_axis(self.normal_set[:, np.newaxis], rank, axis=0).reshape(-1)
+        return np.take_along_axis(self.normal_set[:, np.newaxis], rank, axis=0).reshape(
+            -1
+        )
 
     def normalize(self, word):
         word = self.predict([word], k=1)
         return word[0]
 
     def _update(self, m, np, nn, eta):
-        score = self._score_vec(m, np).toarray()[0][0] - self._score_vec(m, nn).toarray()[0][0]
+        score = (
+            self._score_vec(m, np).toarray()[0][0]
+            - self._score_vec(m, nn).toarray()[0][0]
+        )
         if score < 1:
             self.W = self.W + eta * (m.T.dot(np) - m.T.dot(nn))
 
@@ -165,7 +169,7 @@ class DNorm(object):
         if not (model_dir / "abb_dic.csv").is_file():
             download_fileobj(BASE_URL + "/abb_dic.csv", model_dir / "abb_dic.csv")
 
-        mecab = MeCab.Tagger('-Owakati')
+        mecab = MeCab.Tagger("-Owakati")
         tokenizer = Tokenizer(mecab.parse, lambda s: s[:-1])
 
         if abb_expander == "default":
@@ -182,13 +186,13 @@ class DNorm(object):
 
         normal_set = load_normal_set(normal_set)
 
-        tfidf = TfidfVectorizer(analyzer=lambda s: s.split(' '))
+        tfidf = TfidfVectorizer(analyzer=lambda s: s.split(" "))
 
-        with open(str(model_dir / "EHR_idf3.pkl"), 'rb') as f:
+        with open(str(model_dir / "EHR_idf3.pkl"), "rb") as f:
             params = pickle.load(f)
-        tfidf.set_params(**params['params'])
-        tfidf.vocabulary_ = params['voc']
-        tfidf.idf_ = params['idf']
+        tfidf.set_params(**params["params"])
+        tfidf.vocabulary_ = params["voc"]
+        tfidf.idf_ = params["idf"]
 
         """
         with open(str(model_dir / "EHR_idf.pkl"), 'rb') as f:
