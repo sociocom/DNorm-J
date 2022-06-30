@@ -1,6 +1,7 @@
 mecab-python3>=0.996.5
-numpy==1.18.2
-scipy==1.4.1
+numpy>=1.18.2, < 2.0
+scipy>=1.4.1, < 2.0
 scikit-learn
-tqdm==4.45.0
+tqdm>=4.45.0
 jaconv
+requests
